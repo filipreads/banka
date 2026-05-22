@@ -210,7 +210,7 @@ const CONFIG = {
 const state = {q: '', from: '', to: '', cat: '', sort: 'date_desc', tabSearch: '', activeTab: 'Vše'};
 let DATA = CONFIG.SAMPLE_DATA.slice();
 let renderTimer = null;
-const cache = {categories: null, places: null};
+const cache = {categories: null};
 
 // ============ UTILS ============
 const el = id => document.getElementById(id);
@@ -443,15 +443,53 @@ function showStatus(msg, duration = 3000) {
 }
 
 // ============ FILE HANDLING ============
-function normalizeData(rows) {
-  return rows.map(r => ({
-    datum: (r.datum || r.date || r['Datum'] || '').toString().slice(0, 10),
-    misto: (r.misto || r.place || r['Místo'] || r.popis || '').toString().trim(),
-    castka: parseFloat(r.castka || r.amount || r['Částka'] || 0) || 0,
-    měna: (r.měna || r.currency || r['Měna'] || 'CZK').toString(),
-    kategorie: (r.kategorie || r.category || r['Kategorie'] || '').toString().trim(),
-    typ: (r.typ || r.type || 'Transakce').toString().trim()
-  }));
+function parseCSVLine(line, separator) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const nextChar = line[i + 1];
+    
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === separator && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  
+  result.push(current.trim());
+  return result;
+}
+
+function normalizeData(rows, headers) {
+  return rows.map(r => {
+    const get = (keys) => {
+      for (const key of keys) {
+        const val = r[key];
+        if (val !== undefined && val !== '' && val !== null) return val;
+      }
+      return '';
+    };
+    
+    return {
+      datum: get(['datum', 'date', 'Datum', 'Datum provedení', 'Datum zaúčtování']).toString().slice(0, 10),
+      misto: get(['misto', 'Místo', 'place', 'Popis operace', 'popis', 'Místo transakce']).toString().trim(),
+      castka: parseFloat(get(['castka', 'Částka', 'amount', 'Amount', 'Suma'])) || 0,
+      měna: get(['měna', 'Měna', 'currency', 'Currency']).toString() || 'CZK',
+      kategorie: get(['kategorie', 'Kategorie', 'category', 'Category', 'Druh operace']).toString().trim(),
+      typ: get(['typ', 'Typ', 'type', 'Type', 'Označení operace', 'Druh']).toString().trim() || 'Transakce'
+    };
+  });
 }
 
 async function handleFile(file) {
@@ -463,25 +501,46 @@ async function handleFile(file) {
     let rows = [];
     
     if (file.name.toLowerCase().endsWith('.json')) {
-      const parsed = JSON.parse(text);
-      rows = normalizeData(Array.isArray(parsed) ? parsed : parsed.data || []);
+      try {
+        const parsed = JSON.parse(text);
+        const data = Array.isArray(parsed) ? parsed : (parsed.data || parsed.records || []);
+        if (data.length === 0) throw new Error('Žádné záznamy v JSON');
+        rows = normalizeData(data, Object.keys(data[0] || {}));
+      } catch (e) {
+        throw new Error(`JSON chyba: ${e.message}`);
+      }
     } else {
-      const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
-      if (lines.length < 2) throw new Error('Min. 2 řádky (hlavička + data)');
+      // CSV Parsing
+      const allLines = text.trim().split(/\r?\n/).map(l => l.trim()).filter(l => l);
+      if (allLines.length < 2) throw new Error('CSV musí mít hlavičku + data (min. 2 řádky)');
       
-      const sep = lines[0].includes(';') ? ';' : ',';
-      const headers = lines[0].split(sep).map(s => s.replace(/^\uFEFF/, '').trim());
+      // Detect separator
+      const sep = allLines[0].includes(';') ? ';' : ',';
       
-      rows = lines.slice(1).map(line => {
+      // Parse header
+      const headerLine = allLines[0].replace(/^\uFEFF/, '');
+      const headers = parseCSVLine(headerLine, sep);
+      
+      if (headers.length === 0) throw new Error('CSV hlavička je prázdná');
+      
+      // Parse data rows
+      for (let i = 1; i < allLines.length; i++) {
+        const cols = parseCSVLine(allLines[i], sep);
         const obj = {};
-        line.split(sep).forEach((v, i) => {obj[headers[i]] = v.trim();});
-        return obj;
-      });
+        
+        headers.forEach((h, idx) => {
+          obj[h] = cols[idx] || '';
+        });
+        
+        rows.push(obj);
+      }
       
-      rows = normalizeData(rows);
+      rows = normalizeData(rows, headers);
     }
     
-    if (rows.length === 0) throw new Error('Žádné záznamy');
+    // Validate
+    rows = rows.filter(r => r.datum && r.misto);
+    if (rows.length === 0) throw new Error('Žádné platné záznamy');
     
     DATA = rows;
     cache.categories = null;
@@ -495,7 +554,7 @@ async function handleFile(file) {
     errorDiv.className = 'error';
     errorDiv.innerHTML = `<strong>❌ Chyba:</strong> ${sanitize(err.message)}`;
     errorDiv.hidden = false;
-    showStatus('Chyba při načítání');
+    showStatus('Chyba při načítání: ' + err.message);
   }
 }
 
