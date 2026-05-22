@@ -3,11 +3,13 @@
 <head>
 <meta charset='utf-8'/>
 <meta name='viewport' content='width=device-width, initial-scale=1'/>
+<meta name='description' content='Finanční dashboard pro analýzu transakcí s filtrováním, export CSV a sdílením'/>
 <title>Finanční dashboard</title>
 <style>
-:root{--bg:#08111f;--panel:#0f1b2d;--panel2:#13233a;--line:#243552;--text:#e8eefc;--muted:#92a4c6;--accent:#7c5cff;--accent2:#23c4a8;}
+:root{--bg:#08111f;--panel:#0f1b2d;--panel2:#13233a;--line:#243552;--text:#e8eefc;--muted:#a8b8d8;--accent:#7c5cff;--accent2:#23c4a8;--error:#ff6b6b;--success:#51cf66;}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 700px at 20% -10%, #1b2f54 0%, var(--bg) 55%);color:var(--text);min-height:100vh}
+html,body{height:100%}
 a{color:inherit;text-decoration:none}
 button,input,select{font:inherit}
 .wrap{max-width:1600px;margin:0 auto;padding:20px}
@@ -16,15 +18,17 @@ button,input,select{font:inherit}
 .brand h1{margin:0;font-size:clamp(24px,3vw,38px)}
 .brand p{margin:0;color:var(--muted)}
 .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{border:1px solid var(--line);background:linear-gradient(180deg,#1b2c49,#122033);color:var(--text);padding:11px 14px;border-radius:14px;cursor:pointer;transition:.2s transform,.2s opacity;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.btn{border:1px solid var(--line);background:linear-gradient(180deg,#1b2c49,#122033);color:var(--text);padding:11px 14px;border-radius:14px;cursor:pointer;transition:.2s transform,.2s opacity;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:13px;font-weight:500}
 .btn:hover{transform:translateY(-1px);opacity:.9}
 .btn:active{transform:translateY(0)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.primary{background:linear-gradient(180deg,var(--accent),#5b44e0);border-color:transparent}
 .btn.ghost{background:transparent}
 .grid{display:grid;grid-template-columns:320px 1fr;gap:14px}
 @media (max-width:1100px){.grid{grid-template-columns:1fr}}
-.card{background:linear-gradient(180deg,rgba(18,32,51,.92),rgba(12,22,37,.92));border:1px solid rgba(144,170,217,.12);border-radius:22px;box-shadow:0 18px 60px rgba(0,0,0,.22);backdrop-filter:blur(10px);padding:0}
-.sidebar{padding:14px;display:flex;flex-direction:column;gap:12px;position:sticky;top:12px;align-self:start;max-height:calc(100vh - 24px);overflow:auto}
+.card{background:linear-gradient(180deg,rgba(18,32,51,.92),rgba(12,22,37,.92));border:1px solid rgba(144,170,217,.12);border-radius:22px;box-shadow:0 18px 60px rgba(0,0,0,.22);backdrop-filter:blur(10px)}
+.sidebar{padding:14px;display:flex;flex-direction:column;gap:12px;position:sticky;top:12px;align-self:start;max-height:calc(100vh - 24px);overflow-y:auto;overflow-x:hidden}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
 @media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .kpi{padding:14px;border-radius:18px;background:linear-gradient(180deg,#13233a,#0d1727);border:1px solid rgba(255,255,255,.06)}
@@ -32,30 +36,49 @@ button,input,select{font:inherit}
 .kpi .v{font-size:24px;font-weight:600;color:var(--accent2)}
 .sectionTitle{font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:0 0 6px;font-weight:600}
 .field{display:flex;flex-direction:column;gap:8px}
-.field label{font-size:13px;color:var(--muted)}
+.field label{font-size:13px;color:var(--muted);font-weight:500}
 .field input,.field select{width:100%;border:1px solid var(--line);background:#0b1524;color:var(--text);padding:10px;border-radius:10px;transition:.2s border-color}
-.field input:focus,.field select:focus{outline:none;border-color:var(--accent)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.1)}
 .field input::placeholder{color:var(--muted);opacity:.6}
 .pills{display:flex;flex-wrap:wrap;gap:8px}
-.pill{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#0b1524;color:var(--text);cursor:pointer;font-size:13px;transition:.2s}
+.pill{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#0b1524;color:var(--text);cursor:pointer;font-size:13px;transition:.2s;font-weight:500}
 .pill:hover{border-color:var(--accent);background:rgba(124,92,255,.1)}
+.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.tabs{display:flex;gap:8px;overflow:auto;padding:2px 2px 10px;scrollbar-width:thin}
-.tab{white-space:nowrap;padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:#0b1524;color:var(--text);cursor:pointer;font-size:13px;transition:.2s}
+.tabs{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 10px;scrollbar-width:thin;scroll-behavior:smooth}
+.tab{white-space:nowrap;padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:#0b1524;color:var(--text);cursor:pointer;font-size:13px;transition:.2s;font-weight:500}
 .tab:hover{border-color:var(--accent)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .main{padding:14px}
 .tableWrap{overflow:auto;border-radius:18px;border:1px solid rgba(255,255,255,.06)}
 table{width:100%;border-collapse:collapse;min-width:900px}
-thead th{position:sticky;top:0;background:linear-gradient(180deg,#1b2c49,#122033);border-bottom:1px solid var(--line);padding:12px;text-align:left;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+thead th{position:sticky;top:0;background:linear-gradient(180deg,#1b2c49,#122033);border-bottom:1px solid var(--line);padding:12px;text-align:left;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;cursor:pointer;user-select:none}
+thead th:hover{background:linear-gradient(180deg,#1f3350,#162839)}
 tbody td{padding:12px;border-bottom:1px solid rgba(144,170,217,.08);font-size:13px}
 tbody tr:hover{background:rgba(124,92,255,.05)}
-td.neg{color:#ff6b6b;font-weight:600}
-td.pos{color:#51cf66;font-weight:600}
+td.neg{color:var(--error);font-weight:600}
+td.pos{color:var(--success);font-weight:600}
 .footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
-.notice{padding:12px 14px;border-radius:16px;background:rgba(35,196,168,.1);border:1px solid rgba(35,196,168,.25);color:#bdf5ea;font-size:13px}
-.error{padding:12px 14px;border-radius:16px;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.25);color:#ffb8b8;font-size:13px}
+.notice{padding:12px 14px;border-radius:16px;background:rgba(35,196,168,.1);border:1px solid rgba(35,196,168,.25);color:#bdf5ea;font-size:13px;line-height:1.5}
+.error{padding:12px 14px;border-radius:16px;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.25);color:#ffb8b8;font-size:13px;line-height:1.5}
+.success{padding:12px 14px;border-radius:16px;background:rgba(81,207,102,.1);border:1px solid rgba(81,207,102,.25);color:#b8ffb8;font-size:13px}
 .muted{color:var(--muted);font-size:13px;line-height:1.5}
+.empty-state{padding:40px 20px;text-align:center;color:var(--muted)}
+.empty-state svg{width:48px;height:48px;margin-bottom:12px;opacity:.5}
+.loading{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sortIndicator{display:inline-block;margin-left:4px;font-size:10px}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(124,92,255,.2);color:var(--accent);font-size:11px;font-weight:600}
+@media (max-width:768px){
+  .wrap{padding:12px}
+  .grid{gap:10px}
+  .kpis{gap:8px;margin-bottom:10px}
+  .card{border-radius:16px}
+  .sidebar{position:relative;top:auto;max-height:none;margin-bottom:10px}
+  table{min-width:100%;font-size:12px}
+  .btn{padding:9px 12px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -66,59 +89,59 @@ td.pos{color:#51cf66;font-weight:600}
       <p>Filtrování, záložky podle místa transakce, export CSV a sdílení přes URL.</p>
     </div>
     <div class='actions'>
-      <button class='btn primary' id='copyLink'>Sdílet URL</button>
-      <button class='btn' id='exportCurrent'>Export CSV</button>
-      <button class='btn' id='exportAll'>Export všech dat</button>
-      <button class='btn' id='copyView'>Kopírovat výběr</button>
-      <button class='btn ghost' id='resetAll'>Reset filtrů</button>
+      <button class='btn primary' id='copyLink' aria-label='Sdílet URL s aktuálním pohledem'>Sdílet URL</button>
+      <button class='btn' id='exportCurrent' aria-label='Exportovat filtrované transakce jako CSV'>Export CSV</button>
+      <button class='btn' id='exportAll' aria-label='Exportovat všechny transakce jako CSV'>Export všech</button>
+      <button class='btn' id='copyView' aria-label='Kopírovat výběr jako CSV'>Kopírovat</button>
+      <button class='btn ghost' id='resetAll' aria-label='Resetovat všechny filtry na výchozí hodnoty'>Reset</button>
     </div>
   </div>
 
   <div class='card' style='padding:14px;margin-bottom:14px'>
-    <div class='sectionTitle'>Automatické rozpoznání</div>
-    <div class='muted' style='margin-bottom:10px'>Dashboard umí načíst různé české CSV exporty, protože některé banky používají sloupce podle pořadí a jiné podle názvů; ČSOB i další banky jsou podporovány automaticky.</div>
-    <div class='muted'>Při importu lze automaticky zkusit: oddělovač , nebo ;, kódování UTF-8/Windows-1250, řádky s hlavičkou, datum, částku, měnu, kategorii a místo transakce. Pokud se soubor nenačte správně, zkus ručně upravit pořadí sloupců.</div>
+    <div class='sectionTitle'>ℹ️ Automatické rozpoznání</div>
+    <div class='muted' style='margin-bottom:10px'>Dashboard umí načíst různé české CSV exporty. Automaticky detekuje: oddělovač (`,` nebo `;`), kódování (UTF-8/Windows-1250), sloupce s datem, částkou, měnou, kategorií a místem transakce.</div>
+    <div class='muted'>Podporované banky a formáty: ČSOB, ČEB, Fio Banka, Komerční banka. Nebo nahraj vlastní CSV/JSON soubor.</div>
   </div>
   
   <div class='card' style='padding:14px;margin-bottom:14px'>
-    <div class='sectionTitle'>Nahrát vlastní data</div>
+    <div class='sectionTitle'>📁 Nahrát vlastní data</div>
     <div style='display:flex;gap:10px;flex-wrap:wrap;align-items:center'>
-      <input id='fileInput' type='file' accept='.csv,.json' style='display:none' />
-      <button class='btn' id='pickFile'>Vybrat soubor</button>
-      <button class='btn ghost' id='loadSample'>Vrátit ukázková data</button>
+      <input id='fileInput' type='file' accept='.csv,.json' aria-label='Vybrat CSV nebo JSON soubor' style='display:none' />
+      <button class='btn' id='pickFile' aria-label='Otevřít dialog pro výběr souboru'>Vybrat soubor</button>
+      <button class='btn ghost' id='loadSample' aria-label='Načíst ukázková data'>Ukázková data</button>
       <div class='muted' id='fileName'>Používají se ukázková data.</div>
     </div>
-    <div id='fileError' style='display:none'></div>
+    <div id='fileError' style='display:none' role='alert'></div>
   </div>
   
   <div class='kpis'>
-    <div class='kpi'><div class='l'>Transakcí</div><div class='v' id='kpiCount'>0</div></div>
-    <div class='kpi'><div class='l'>Součet</div><div class='v' id='kpiSum'>0 Kč</div></div>
-    <div class='kpi'><div class='l'>Průměr</div><div class='v' id='kpiAvg'>0 Kč</div></div>
-    <div class='kpi'><div class='l'>Míst</div><div class='v' id='kpiPlaces'>0</div></div>
+    <div class='kpi'><div class='l'>Transakcí</div><div class='v' id='kpiCount' aria-label='Počet transakcí'>0</div></div>
+    <div class='kpi'><div class='l'>Součet</div><div class='v' id='kpiSum' aria-label='Celková částka'>0 Kč</div></div>
+    <div class='kpi'><div class='l'>Průměr</div><div class='v' id='kpiAvg' aria-label='Průměrná částka'>0 Kč</div></div>
+    <div class='kpi'><div class='l'>Míst</div><div class='v' id='kpiPlaces' aria-label='Počet míst transakce'>0</div></div>
   </div>
   
   <div class='grid'>
-    <aside class='card sidebar'>
+    <aside class='card sidebar' role='region' aria-label='Filtry a vyhledávání'>
       <div class='field'>
-        <label>Vyhledat místo</label>
-        <input id='placeSearch' placeholder='např. Albert, MOL, Uni Hobby' />
+        <label for='placeSearch'>Vyhledat místo</label>
+        <input id='placeSearch' placeholder='např. Albert, MOL, Uni Hobby' aria-label='Hledat místo transakce' />
       </div>
       <div class='field'>
-        <label>Datum od</label>
-        <input id='dateFrom' type='date' />
+        <label for='dateFrom'>Datum od</label>
+        <input id='dateFrom' type='date' aria-label='Počáteční datum filtru' />
       </div>
       <div class='field'>
-        <label>Datum do</label>
-        <input id='dateTo' type='date' />
+        <label for='dateTo'>Datum do</label>
+        <input id='dateTo' type='date' aria-label='Koncové datum filtru' />
       </div>
       <div class='field'>
-        <label>Kategorie</label>
-        <select id='categoryFilter'><option value=''>Všechny</option></select>
+        <label for='categoryFilter'>Kategorie</label>
+        <select id='categoryFilter' aria-label='Filtrovat podle kategorie'><option value=''>Všechny</option></select>
       </div>
       <div class='field'>
-        <label>Řazení</label>
-        <select id='sortBy'>
+        <label for='sortBy'>Řazení</label>
+        <select id='sortBy' aria-label='Vybrat řazení transakcí'>
           <option value='date_asc'>Datum vzestupně</option>
           <option value='date_desc'>Datum sestupně</option>
           <option value='amount_desc'>Částka (největší)</option>
@@ -126,34 +149,39 @@ td.pos{color:#51cf66;font-weight:600}
           <option value='place_asc'>Místo (A-Z)</option>
         </select>
       </div>
-      <div class='sectionTitle'>Rychlé filtry</div>
-      <div class='pills' id='quickPills'></div>
+      <div class='sectionTitle'>⚡ Rychlé filtry</div>
+      <div class='pills' id='quickPills' role='group' aria-label='Rychlé filtry podle kategorií'></div>
       <div class='notice'>💡 Tip: stav filtrů se ukládá do URL, takže jej můžeš poslat dál a otevře se stejný pohled.</div>
     </aside>
     
-    <main class='card main'>
-      <div class='sectionTitle'>Záložky podle místa transakce</div>
+    <main class='card main' role='region' aria-label='Tabulka transakcí'>
+      <div class='sectionTitle'>📑 Záložky podle místa transakce</div>
       <div class='field' style='margin-bottom:10px'>
-        <input id='tabSearch' placeholder='Hledat mezi záložkami' />
+        <input id='tabSearch' placeholder='Hledat mezi záložkami' aria-label='Hledat mezi záložkami míst transakce' />
       </div>
-      <div class='tabs' id='tabs'></div>
+      <div class='tabs' id='tabs' role='tablist' aria-label='Filtry podle místa transakcí'></div>
       <div class='tableWrap'>
-        <table>
+        <table role='grid' aria-label='Tabulka transakcí'>
           <thead>
             <tr>
-              <th>Datum</th>
-              <th>Místo</th>
-              <th>Částka</th>
-              <th>Měna</th>
-              <th>Kategorie</th>
-              <th>Typ</th>
+              <th scope='col' aria-sort='none'>Datum</th>
+              <th scope='col'>Místo</th>
+              <th scope='col'>Částka</th>
+              <th scope='col'>Měna</th>
+              <th scope='col'>Kategorie</th>
+              <th scope='col'>Typ</th>
             </tr>
           </thead>
           <tbody id='tbody'></tbody>
         </table>
+        <div id='emptyState' class='empty-state' style='display:none'>
+          <div style='font-size:32px;margin-bottom:8px'>📭</div>
+          <p>Žádné transakce se shodují s vybranými filtry.</p>
+          <button class='btn ghost' id='clearFilters'>Vymazat filtry</button>
+        </div>
       </div>
       <div class='footer'>
-        <div id='status'>Načítám…</div>
+        <div id='status' aria-live='polite' aria-atomic='true'></div>
         <div id='rangeInfo'></div>
       </div>
     </main>
@@ -161,24 +189,56 @@ td.pos{color:#51cf66;font-weight:600}
 </div>
 
 <script>
-// Sample data
-const SAMPLE_DATA = [
-  {"datum":"2025-06-16","misto_transakce":"NERUDA PRODUC Prague","castka_czk":-399.0,"měna":"CZK","kategorie":"TV, internet, telefon","označení operace":"Transakce"},
-  {"datum":"2025-06-15","misto_transakce":"ALBERT SUPERMARKET","castka_czk":-1250.50,"měna":"CZK","kategorie":"Potraviny","označení operace":"Nákup"},
-  {"datum":"2025-06-14","misto_transakce":"MOL PETROL STATION","castka_czk":-800.0,"měna":"CZK","kategorie":"Tankování","označení operace":"Tankování"},
-  {"datum":"2025-06-13","misto_transakce":"RESTAURACE U LVA","castka_czk":-450.75,"měna":"CZK","kategorie":"Restaurace","označení operace":"Nákup"},
-  {"datum":"2025-06-12","misto_transakce":"BANKOMAT FIO","castka_czk":-5000.0,"měna":"CZK","kategorie":"Výběr z bankomatu","označení operace":"Výběr"},
-  {"datum":"2025-06-11","misto_transakce":"KINO AERO","castka_czk":-240.0,"měna":"CZK","kategorie":"Volný čas a zábava","označení operace":"Nákup"},
-  {"datum":"2025-06-10","misto_transakce":"SALON KRASOTY","castka_czk":-320.0,"měna":"CZK","kategorie":"Osobní péče","označení operace":"Nákup"},
-  {"datum":"2025-06-09","misto_transakce":"NÁKUPNÍ CENTRUM PALLADIUM","castka_czk":-2100.0,"měna":"CZK","kategorie":"Nákupy","označení operace":"Nákup"}
-];
+// Constants
+const CONFIG = {
+  SAMPLE_DATA: [
+    {"datum":"2025-06-16","misto_transakce":"NERUDA PRODUC Prague","castka_czk":-399.0,"měna":"CZK","kategorie":"TV, internet, telefon","označení operace":"Transakce"},
+    {"datum":"2025-06-15","misto_transakce":"ALBERT SUPERMARKET","castka_czk":-1250.50,"měna":"CZK","kategorie":"Potraviny","označení operace":"Nákup"},
+    {"datum":"2025-06-14","misto_transakce":"MOL PETROL STATION","castka_czk":-800.0,"měna":"CZK","kategorie":"Tankování","označení operace":"Tankování"},
+    {"datum":"2025-06-13","misto_transakce":"RESTAURACE U LVA","castka_czk":-450.75,"měna":"CZK","kategorie":"Restaurace","označení operace":"Nákup"},
+    {"datum":"2025-06-12","misto_transakce":"BANKOMAT FIO","castka_czk":-5000.0,"měna":"CZK","kategorie":"Výběr z bankomatu","označení operace":"Výběr"},
+    {"datum":"2025-06-11","misto_transakce":"KINO AERO","castka_czk":-240.0,"měna":"CZK","kategorie":"Volný čas a zábava","označení operace":"Nákup"},
+    {"datum":"2025-06-10","misto_transakce":"SALON KRASOTY","castka_czk":-320.0,"měna":"CZK","kategorie":"Osobní péče","označení operace":"Nákup"},
+    {"datum":"2025-06-09","misto_transakce":"NÁKUPNÍ CENTRUM PALLADIUM","castka_czk":-2100.0,"měna":"CZK","kategorie":"Nákupy","označení operace":"Nákup"}
+  ],
+  STORAGE_KEY: 'dashboard_state',
+  FILTER_DEBOUNCE_MS: 300
+};
 
-let DATA = SAMPLE_DATA.slice();
+let DATA = CONFIG.SAMPLE_DATA.slice();
+let debounceTimer = null;
 
 const el = id => document.getElementById(id);
 const fmt = n => new Intl.NumberFormat('cs-CZ', {maximumFractionDigits: 2}).format(n) + ' Kč';
 const state = {q: '', from: '', to: '', cat: '', sort: 'date_asc', tabSearch: '', activeTab: 'Vše'};
 
+// Utilities
+function sanitizeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn('Could not save state:', e);
+  }
+}
+
+function loadStateFromStorage() {
+  try {
+    const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (stored) {
+      Object.assign(state, JSON.parse(stored));
+    }
+  } catch (e) {
+    console.warn('Could not load state:', e);
+  }
+}
+
+// Core functions
 function categories() {
   return [...new Set(DATA.map(x => x.kategorie).filter(Boolean))].sort();
 }
@@ -196,6 +256,7 @@ function writeURL() {
     if (v) p.set(k, v);
   });
   history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p.toString() : ''));
+  saveState();
 }
 
 function applyState() {
@@ -222,6 +283,7 @@ function setQuickPills() {
     const pill = document.createElement('button');
     pill.className = 'pill' + (state.cat === catValue ? ' active' : '');
     pill.textContent = label;
+    pill.setAttribute('aria-pressed', state.cat === catValue);
     pill.onclick = () => {
       state.cat = state.cat === catValue ? '' : catValue;
       state.q = '';
@@ -235,7 +297,8 @@ function filtered() {
   let rows = DATA.slice();
   
   if (state.q) {
-    rows = rows.filter(x => x.misto_transakce.toLowerCase().includes(state.q.toLowerCase()));
+    const q = state.q.toLowerCase();
+    rows = rows.filter(x => x.misto_transakce.toLowerCase().includes(q));
   }
   if (state.from) {
     rows = rows.filter(x => x.datum >= state.from);
@@ -247,21 +310,25 @@ function filtered() {
     rows = rows.filter(x => x.kategorie === state.cat);
   }
   
-  // Sort
   rows.sort((a, b) => {
-    switch (state.sort) {
-      case 'date_asc':
-        return new Date(a.datum) - new Date(b.datum);
-      case 'date_desc':
-        return new Date(b.datum) - new Date(a.datum);
-      case 'amount_desc':
-        return Math.abs(b.castka_czk || 0) - Math.abs(a.castka_czk || 0);
-      case 'amount_asc':
-        return Math.abs(a.castka_czk || 0) - Math.abs(b.castka_czk || 0);
-      case 'place_asc':
-        return a.misto_transakce.localeCompare(b.misto_transakce, 'cs');
-      default:
-        return 0;
+    try {
+      switch (state.sort) {
+        case 'date_asc':
+          return new Date(a.datum) - new Date(b.datum);
+        case 'date_desc':
+          return new Date(b.datum) - new Date(a.datum);
+        case 'amount_desc':
+          return Math.abs(b.castka_czk || 0) - Math.abs(a.castka_czk || 0);
+        case 'amount_asc':
+          return Math.abs(a.castka_czk || 0) - Math.abs(b.castka_czk || 0);
+        case 'place_asc':
+          return a.misto_transakce.localeCompare(b.misto_transakce, 'cs');
+        default:
+          return 0;
+      }
+    } catch (e) {
+      console.error('Sort error:', e);
+      return 0;
     }
   });
   
@@ -272,16 +339,22 @@ function renderTabs(rows) {
   const allPlaces = [...new Set(rows.map(x => x.misto_transakce))].sort((a, b) => a.localeCompare(b, 'cs'));
   const tabs = ['Vše', ...allPlaces];
   
-  // Filter tabs by search
   const filteredTabs = tabs.filter(t => t.toLowerCase().includes(state.tabSearch.toLowerCase()));
   
   const container = el('tabs');
   container.innerHTML = '';
   
+  if (filteredTabs.length === 0) {
+    container.innerHTML = '<div class="muted" style="padding:10px">Žádné záložky se shodují</div>';
+    return;
+  }
+  
   filteredTabs.forEach(tab => {
     const button = document.createElement('button');
     button.className = 'tab' + (state.activeTab === tab ? ' active' : '');
     button.textContent = tab;
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-selected', state.activeTab === tab);
     button.onclick = () => {
       state.activeTab = tab;
       state.q = tab === 'Vše' ? '' : tab;
@@ -295,18 +368,28 @@ function renderTable(rows) {
   const tbody = el('tbody');
   tbody.innerHTML = '';
   
+  const emptyState = el('emptyState');
+  
+  if (rows.length === 0) {
+    emptyState.style.display = 'block';
+    el('status').textContent = '';
+    return;
+  }
+  
+  emptyState.style.display = 'none';
+  
   rows.forEach(r => {
     const tr = document.createElement('tr');
     const amount = parseFloat(r.castka_czk || 0);
     const isNegative = amount < 0;
     
     tr.innerHTML = `
-      <td>${r.datum || '-'}</td>
-      <td>${r.misto_transakce || '-'}</td>
+      <td>${sanitizeHTML(r.datum || '-')}</td>
+      <td>${sanitizeHTML(r.misto_transakce || '-')}</td>
       <td class="${isNegative ? 'neg' : 'pos'}">${fmt(Math.abs(amount))}</td>
-      <td>${r.měna || '-'}</td>
-      <td>${r.kategorie || '-'}</td>
-      <td>${r['označení operace'] || '-'}</td>
+      <td>${sanitizeHTML(r.měna || '-')}</td>
+      <td>${sanitizeHTML(r.kategorie || '-')}</td>
+      <td>${sanitizeHTML(r['označení operace'] || '-')}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -323,7 +406,6 @@ function updateKPIs(rows) {
   el('kpiAvg').textContent = fmt(avg);
   el('kpiPlaces').textContent = places.toLocaleString('cs-CZ');
   
-  // Update range info
   if (rows.length > 0) {
     const dates = rows.map(r => r.datum).filter(Boolean).sort();
     const minDate = dates[0];
@@ -344,8 +426,18 @@ function render() {
   updateKPIs(rows);
 }
 
+function debouncedRender() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => render(), CONFIG.FILTER_DEBOUNCE_MS);
+}
+
 function exportCSV(rows, filename = 'dashboard-export.csv') {
   try {
+    if (rows.length === 0) {
+      showStatus('❌ Není co exportovat', 3000);
+      return;
+    }
+    
     const hdr = ['datum', 'misto_transakce', 'castka_czk', 'měna', 'kategorie', 'označení operace'];
     const csv = [
       hdr.join(';'),
@@ -368,15 +460,21 @@ function exportCSV(rows, filename = 'dashboard-export.csv') {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     
-    el('status').textContent = `Exportováno ${rows.length} záznamů`;
-    setTimeout(() => {el('status').textContent = '';}, 3000);
+    showStatus(`✓ Exportováno ${rows.length} záznamů`, 3000);
   } catch (err) {
     console.error('Export error:', err);
-    el('status').textContent = '❌ Chyba při exportu';
+    showStatus('❌ Chyba při exportu', 3000);
   }
 }
 
-// Event listeners for filters
+function showStatus(message, duration = 3000) {
+  el('status').textContent = message;
+  if (duration > 0) {
+    setTimeout(() => {el('status').textContent = '';}, duration);
+  }
+}
+
+// Event listeners
 ['placeSearch', 'dateFrom', 'dateTo', 'categoryFilter', 'sortBy', 'tabSearch'].forEach(id => {
   el(id).addEventListener('input', () => {
     state.q = el('placeSearch').value.trim();
@@ -385,13 +483,13 @@ function exportCSV(rows, filename = 'dashboard-export.csv') {
     state.cat = el('categoryFilter').value;
     state.sort = el('sortBy').value;
     state.tabSearch = el('tabSearch').value.trim();
-    render();
+    debouncedRender();
   });
 });
 
 // Populate categories
 el('categoryFilter').innerHTML = '<option value="">Všechny</option>' + 
-  categories().map(c => `<option value="${c}">${c}</option>`).join('');
+  categories().map(c => `<option value="${c}">${sanitizeHTML(c)}</option>`).join('');
 
 // Button handlers
 el('exportCurrent').onclick = () => exportCSV(filtered(), 'filtrovany-export.csv');
@@ -401,10 +499,9 @@ el('copyView').onclick = () => exportCSV(filtered(), 'vyber.csv');
 el('copyLink').onclick = async () => {
   try {
     await navigator.clipboard.writeText(location.href);
-    el('status').textContent = '✓ URL zkopírována do schránky';
-    setTimeout(() => {el('status').textContent = '';}, 3000);
+    showStatus('✓ URL zkopírována do schránky', 3000);
   } catch (err) {
-    prompt('Zkopíruj URL:', location.href);
+    const url = prompt('Zkopíruj URL:', location.href);
   }
 };
 
@@ -419,6 +516,9 @@ el('resetAll').onclick = () => {
   render();
 };
 
+el('clearFilters').onclick = el('resetAll').onclick;
+
+// File handling
 function pick(v) {
   return (v ?? '').toString().trim();
 }
@@ -438,6 +538,7 @@ async function handleFile(file) {
   try {
     el('fileError').style.display = 'none';
     el('fileError').innerHTML = '';
+    showStatus('📥 Načítám soubor…', 0);
     
     const text = await file.text();
     let rows = [];
@@ -450,13 +551,11 @@ async function handleFile(file) {
         throw new Error('Nevalidní JSON formát: ' + e.message);
       }
     } else {
-      // CSV parsing with auto-detection
       const lines = text.trim().split(/\r?\n/);
       if (lines.length < 2) {
         throw new Error('CSV soubor musí mít alespoň 2 řádky (hlavička + data)');
       }
       
-      // Detect separator
       const firstLine = lines[0];
       const sep = firstLine.includes(';') ? ';' : ',';
       
@@ -486,15 +585,15 @@ async function handleFile(file) {
     DATA = rows;
     state.activeTab = 'Vše';
     el('fileName').textContent = `✓ Nahráno: ${file.name} (${DATA.length.toLocaleString('cs-CZ')} záznamů)`;
-    el('status').textContent = 'Data úspěšně načtena';
+    showStatus(`✓ Data úspěšně načtena (${rows.length} záznamů)`, 3000);
     render();
   } catch (err) {
     console.error('File handling error:', err);
     const errorDiv = el('fileError');
     errorDiv.className = 'error';
-    errorDiv.innerHTML = `<strong>❌ Chyba:</strong> ${err.message}`;
+    errorDiv.innerHTML = `<strong>❌ Chyba:</strong> ${sanitizeHTML(err.message)}`;
     errorDiv.style.display = 'block';
-    el('status').textContent = 'Chyba při načítání souboru';
+    showStatus('Chyba při načítání souboru', 3000);
   }
 }
 
@@ -506,19 +605,20 @@ el('fileInput').onchange = e => {
 };
 
 el('loadSample').onclick = () => {
-  DATA = SAMPLE_DATA.slice();
+  DATA = CONFIG.SAMPLE_DATA.slice();
   state.activeTab = 'Vše';
   el('fileName').textContent = 'Používají se ukázková data.';
   el('fileError').style.display = 'none';
-  el('status').textContent = 'Vrácena ukázková data';
+  showStatus('✓ Vrácena ukázková data', 3000);
   render();
 };
 
 // Initialize
 readURL();
+loadStateFromStorage();
 render();
 
-// Simple test suite
+// Tests
 window.tests = {
   testCategories: () => categories().length > 0 ? '✓' : '✗',
   testFiltering: () => filtered().length > 0 ? '✓' : '✗',
@@ -537,7 +637,7 @@ window.tests = {
   testState: () => state.q !== undefined ? '✓' : '✗'
 };
 
-console.log('Tests:', window.tests);
+console.log('Dashboard initialized. Tests:', window.tests);
 </script>
 </body>
 </html>
