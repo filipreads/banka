@@ -8,8 +8,8 @@
 <style>
 :root{--bg:#08111f;--panel:#0f1b2d;--panel2:#13233a;--line:#243552;--text:#e8eefc;--muted:#a8b8d8;--accent:#7c5cff;--accent2:#23c4a8;--error:#ff6b6b;--success:#51cf66;}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 700px at 20% -10%, #1b2f54 0%, var(--bg) 55%);color:var(--text);min-height:100vh}
-html,body{height:100%}
+html,body{height:100%;margin:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 700px at 20% -10%, #1b2f54 0%, var(--bg) 55%);color:var(--text);overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 button,input,select{font:inherit}
 .wrap{max-width:1600px;margin:0 auto;padding:20px}
@@ -18,7 +18,7 @@ button,input,select{font:inherit}
 .brand h1{margin:0;font-size:clamp(24px,3vw,38px)}
 .brand p{margin:0;color:var(--muted)}
 .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{border:1px solid var(--line);background:linear-gradient(180deg,#1b2c49,#122033);color:var(--text);padding:11px 14px;border-radius:14px;cursor:pointer;transition:.2s transform,.2s opacity;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:13px;font-weight:500}
+.btn{border:1px solid var(--line);background:linear-gradient(180deg,#1b2c49,#122033);color:var(--text);padding:11px 14px;border-radius:14px;cursor:pointer;transition:.15s transform,.15s opacity;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:13px;font-weight:500;user-select:none}
 .btn:hover{transform:translateY(-1px);opacity:.9}
 .btn:active{transform:translateY(0)}
 .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -29,29 +29,28 @@ button,input,select{font:inherit}
 @media (max-width:1100px){.grid{grid-template-columns:1fr}}
 .card{background:linear-gradient(180deg,rgba(18,32,51,.92),rgba(12,22,37,.92));border:1px solid rgba(144,170,217,.12);border-radius:22px;box-shadow:0 18px 60px rgba(0,0,0,.22);backdrop-filter:blur(10px)}
 .sidebar{padding:14px;display:flex;flex-direction:column;gap:12px;position:sticky;top:12px;align-self:start;max-height:calc(100vh - 24px);overflow-y:auto;overflow-x:hidden}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
-@media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
 .kpi{padding:14px;border-radius:18px;background:linear-gradient(180deg,#13233a,#0d1727);border:1px solid rgba(255,255,255,.06)}
 .kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
 .kpi .v{font-size:24px;font-weight:600;color:var(--accent2)}
 .sectionTitle{font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:0 0 6px;font-weight:600}
 .field{display:flex;flex-direction:column;gap:8px}
 .field label{font-size:13px;color:var(--muted);font-weight:500}
-.field input,.field select{width:100%;border:1px solid var(--line);background:#0b1524;color:var(--text);padding:10px;border-radius:10px;transition:.2s border-color}
+.field input,.field select{width:100%;border:1px solid var(--line);background:#0b1524;color:var(--text);padding:10px;border-radius:10px;transition:.15s border-color;will-change:border-color}
 .field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.1)}
 .field input::placeholder{color:var(--muted);opacity:.6}
 .pills{display:flex;flex-wrap:wrap;gap:8px}
-.pill{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#0b1524;color:var(--text);cursor:pointer;font-size:13px;transition:.2s;font-weight:500}
+.pill{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#0b1524;color:var(--text);cursor:pointer;font-size:13px;transition:.15s;font-weight:500;user-select:none}
 .pill:hover{border-color:var(--accent);background:rgba(124,92,255,.1)}
 .pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.tabs{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 10px;scrollbar-width:thin;scroll-behavior:smooth}
-.tab{white-space:nowrap;padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:#0b1524;color:var(--text);cursor:pointer;font-size:13px;transition:.2s;font-weight:500}
+.tabs{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 10px;scrollbar-width:thin;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.tab{white-space:nowrap;padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:#0b1524;color:var(--text);cursor:pointer;font-size:13px;transition:.15s;font-weight:500;user-select:none}
 .tab:hover{border-color:var(--accent)}
 .tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .main{padding:14px}
-.tableWrap{overflow:auto;border-radius:18px;border:1px solid rgba(255,255,255,.06)}
+.tableWrap{overflow:auto;border-radius:18px;border:1px solid rgba(255,255,255,.06);contain:layout}
 table{width:100%;border-collapse:collapse;min-width:900px}
 thead th{position:sticky;top:0;background:linear-gradient(180deg,#1b2c49,#122033);border-bottom:1px solid var(--line);padding:12px;text-align:left;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;cursor:pointer;user-select:none}
 thead th:hover{background:linear-gradient(180deg,#1f3350,#162839)}
@@ -65,19 +64,26 @@ td.pos{color:var(--success);font-weight:600}
 .success{padding:12px 14px;border-radius:16px;background:rgba(81,207,102,.1);border:1px solid rgba(81,207,102,.25);color:#b8ffb8;font-size:13px}
 .muted{color:var(--muted);font-size:13px;line-height:1.5}
 .empty-state{padding:40px 20px;text-align:center;color:var(--muted)}
-.empty-state svg{width:48px;height:48px;margin-bottom:12px;opacity:.5}
-.loading{display:inline-block;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.sortIndicator{display:inline-block;margin-left:4px;font-size:10px}
-.badge{display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(124,92,255,.2);color:var(--accent);font-size:11px;font-weight:600}
+.loading{animation:spin 1s linear infinite}
 @media (max-width:768px){
   .wrap{padding:12px}
   .grid{gap:10px}
-  .kpis{gap:8px;margin-bottom:10px}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
   .card{border-radius:16px}
   .sidebar{position:relative;top:auto;max-height:none;margin-bottom:10px}
   table{min-width:100%;font-size:12px}
   .btn{padding:9px 12px;font-size:12px}
+  .actions{gap:8px}
+}
+@media (max-width:480px){
+  .wrap{padding:10px}
+  .brand h1{font-size:20px}
+  .brand p{font-size:12px}
+  .btn{padding:8px 10px;font-size:11px}
+  .top{flex-direction:column;align-items:flex-start}
+  .actions{width:100%;flex-direction:column}
+  .kpis{gap:6px}
 }
 </style>
 </head>
@@ -85,86 +91,83 @@ td.pos{color:var(--success);font-weight:600}
 <div class='wrap'>
   <div class='top'>
     <div class='brand'>
-      <h1>Finanční dashboard transakcí</h1>
-      <p>Filtrování, záložky podle místa transakce, export CSV a sdílení přes URL.</p>
+      <h1>Finanční dashboard</h1>
+      <p>Filtrování, export CSV a sdílení přes URL</p>
     </div>
     <div class='actions'>
-      <button class='btn primary' id='copyLink' aria-label='Sdílet URL s aktuálním pohledem'>Sdílet URL</button>
-      <button class='btn' id='exportCurrent' aria-label='Exportovat filtrované transakce jako CSV'>Export CSV</button>
-      <button class='btn' id='exportAll' aria-label='Exportovat všechny transakce jako CSV'>Export všech</button>
-      <button class='btn' id='copyView' aria-label='Kopírovat výběr jako CSV'>Kopírovat</button>
-      <button class='btn ghost' id='resetAll' aria-label='Resetovat všechny filtry na výchozí hodnoty'>Reset</button>
+      <button class='btn primary' id='copyLink' aria-label='Sdílet URL'>Sdílet URL</button>
+      <button class='btn' id='exportCurrent' aria-label='Exportovat filtrované transakce'>Export</button>
+      <button class='btn ghost' id='resetAll' aria-label='Resetovat filtry'>Reset</button>
     </div>
   </div>
 
   <div class='card' style='padding:14px;margin-bottom:14px'>
-    <div class='sectionTitle'>ℹ️ Automatické rozpoznání</div>
-    <div class='muted' style='margin-bottom:10px'>Dashboard umí načíst různé české CSV exporty. Automaticky detekuje: oddělovač (`,` nebo `;`), kódování (UTF-8/Windows-1250), sloupce s datem, částkou, měnou, kategorií a místem transakce.</div>
-    <div class='muted'>Podporované banky a formáty: ČSOB, ČEB, Fio Banka, Komerční banka. Nebo nahraj vlastní CSV/JSON soubor.</div>
+    <div class='sectionTitle'>ℹ️ O aplikaci</div>
+    <div class='muted'>Automaticky detekuje CSV formáty (oddělovač, kódování). Podporuje ČSOB, ČEB, Fio Banku, KB. Stav filtrů se ukládá do URL.</div>
   </div>
   
   <div class='card' style='padding:14px;margin-bottom:14px'>
-    <div class='sectionTitle'>📁 Nahrát vlastní data</div>
-    <div style='display:flex;gap:10px;flex-wrap:wrap;align-items:center'>
-      <input id='fileInput' type='file' accept='.csv,.json' aria-label='Vybrat CSV nebo JSON soubor' style='display:none' />
-      <button class='btn' id='pickFile' aria-label='Otevřít dialog pro výběr souboru'>Vybrat soubor</button>
-      <button class='btn ghost' id='loadSample' aria-label='Načíst ukázková data'>Ukázková data</button>
-      <div class='muted' id='fileName'>Používají se ukázková data.</div>
+    <div class='sectionTitle'>📁 Data</div>
+    <div style='display:flex;gap:10px;flex-wrap:wrap'>
+      <input id='fileInput' type='file' accept='.csv,.json' style='display:none' />
+      <button class='btn' id='pickFile'>Vybrat soubor</button>
+      <button class='btn ghost' id='loadSample'>Ukázková data</button>
+      <div class='muted' id='fileName' style='flex:1'>Ukázková data</div>
     </div>
     <div id='fileError' style='display:none' role='alert'></div>
   </div>
   
   <div class='kpis'>
-    <div class='kpi'><div class='l'>Transakcí</div><div class='v' id='kpiCount' aria-label='Počet transakcí'>0</div></div>
-    <div class='kpi'><div class='l'>Součet</div><div class='v' id='kpiSum' aria-label='Celková částka'>0 Kč</div></div>
-    <div class='kpi'><div class='l'>Průměr</div><div class='v' id='kpiAvg' aria-label='Průměrná částka'>0 Kč</div></div>
-    <div class='kpi'><div class='l'>Míst</div><div class='v' id='kpiPlaces' aria-label='Počet míst transakce'>0</div></div>
+    <div class='kpi'><div class='l'>Transakcí</div><div class='v' id='kpiCount'>0</div></div>
+    <div class='kpi'><div class='l'>Součet</div><div class='v' id='kpiSum'>0 Kč</div></div>
+    <div class='kpi'><div class='l'>Průměr</div><div class='v' id='kpiAvg'>0 Kč</div></div>
+    <div class='kpi'><div class='l'>Míst</div><div class='v' id='kpiPlaces'>0</div></div>
   </div>
   
   <div class='grid'>
-    <aside class='card sidebar' role='region' aria-label='Filtry a vyhledávání'>
+    <aside class='card sidebar' role='region' aria-label='Filtry'>
       <div class='field'>
-        <label for='placeSearch'>Vyhledat místo</label>
-        <input id='placeSearch' placeholder='např. Albert, MOL, Uni Hobby' aria-label='Hledat místo transakce' />
+        <label for='placeSearch'>Místo</label>
+        <input id='placeSearch' placeholder='Albert, MOL...' />
       </div>
       <div class='field'>
-        <label for='dateFrom'>Datum od</label>
-        <input id='dateFrom' type='date' aria-label='Počáteční datum filtru' />
+        <label for='dateFrom'>Od</label>
+        <input id='dateFrom' type='date' />
       </div>
       <div class='field'>
-        <label for='dateTo'>Datum do</label>
-        <input id='dateTo' type='date' aria-label='Koncové datum filtru' />
+        <label for='dateTo'>Do</label>
+        <input id='dateTo' type='date' />
       </div>
       <div class='field'>
         <label for='categoryFilter'>Kategorie</label>
-        <select id='categoryFilter' aria-label='Filtrovat podle kategorie'><option value=''>Všechny</option></select>
+        <select id='categoryFilter'><option>Všechny</option></select>
       </div>
       <div class='field'>
         <label for='sortBy'>Řazení</label>
-        <select id='sortBy' aria-label='Vybrat řazení transakcí'>
-          <option value='date_asc'>Datum vzestupně</option>
-          <option value='date_desc'>Datum sestupně</option>
-          <option value='amount_desc'>Částka (největší)</option>
-          <option value='amount_asc'>Částka (nejmenší)</option>
-          <option value='place_asc'>Místo (A-Z)</option>
+        <select id='sortBy'>
+          <option value='date_desc'>Nejnovější</option>
+          <option value='date_asc'>Nejstarší</option>
+          <option value='amount_desc'>Největší</option>
+          <option value='amount_asc'>Nejmenší</option>
+          <option value='place_asc'>Místo A-Z</option>
         </select>
       </div>
-      <div class='sectionTitle'>⚡ Rychlé filtry</div>
-      <div class='pills' id='quickPills' role='group' aria-label='Rychlé filtry podle kategorií'></div>
-      <div class='notice'>💡 Tip: stav filtrů se ukládá do URL, takže jej můžeš poslat dál a otevře se stejný pohled.</div>
+      <div class='sectionTitle'>Rychlé filtry</div>
+      <div class='pills' id='quickPills'></div>
+      <div class='notice'>💡 Filtry se ukládají do URL</div>
     </aside>
     
-    <main class='card main' role='region' aria-label='Tabulka transakcí'>
-      <div class='sectionTitle'>📑 Záložky podle místa transakce</div>
+    <main class='card main' role='main'>
+      <div class='sectionTitle'>Transakce</div>
       <div class='field' style='margin-bottom:10px'>
-        <input id='tabSearch' placeholder='Hledat mezi záložkami' aria-label='Hledat mezi záložkami míst transakce' />
+        <input id='tabSearch' placeholder='Hledat místo...' />
       </div>
-      <div class='tabs' id='tabs' role='tablist' aria-label='Filtry podle místa transakcí'></div>
+      <div class='tabs' id='tabs' role='tablist'></div>
       <div class='tableWrap'>
-        <table role='grid' aria-label='Tabulka transakcí'>
+        <table>
           <thead>
             <tr>
-              <th scope='col' aria-sort='none'>Datum</th>
+              <th scope='col'>Datum</th>
               <th scope='col'>Místo</th>
               <th scope='col'>Částka</th>
               <th scope='col'>Měna</th>
@@ -174,9 +177,8 @@ td.pos{color:var(--success);font-weight:600}
           </thead>
           <tbody id='tbody'></tbody>
         </table>
-        <div id='emptyState' class='empty-state' style='display:none'>
-          <div style='font-size:32px;margin-bottom:8px'>📭</div>
-          <p>Žádné transakce se shodují s vybranými filtry.</p>
+        <div id='emptyState' class='empty-state' hidden>
+          <p>📭 Žádné transakce</p>
           <button class='btn ghost' id='clearFilters'>Vymazat filtry</button>
         </div>
       </div>
@@ -189,60 +191,55 @@ td.pos{color:var(--success);font-weight:600}
 </div>
 
 <script>
-// Constants
+// ============ CONFIG & STATE ============
 const CONFIG = {
   SAMPLE_DATA: [
-    {"datum":"2025-06-16","misto_transakce":"NERUDA PRODUC Prague","castka_czk":-399.0,"měna":"CZK","kategorie":"TV, internet, telefon","označení operace":"Transakce"},
-    {"datum":"2025-06-15","misto_transakce":"ALBERT SUPERMARKET","castka_czk":-1250.50,"měna":"CZK","kategorie":"Potraviny","označení operace":"Nákup"},
-    {"datum":"2025-06-14","misto_transakce":"MOL PETROL STATION","castka_czk":-800.0,"měna":"CZK","kategorie":"Tankování","označení operace":"Tankování"},
-    {"datum":"2025-06-13","misto_transakce":"RESTAURACE U LVA","castka_czk":-450.75,"měna":"CZK","kategorie":"Restaurace","označení operace":"Nákup"},
-    {"datum":"2025-06-12","misto_transakce":"BANKOMAT FIO","castka_czk":-5000.0,"měna":"CZK","kategorie":"Výběr z bankomatu","označení operace":"Výběr"},
-    {"datum":"2025-06-11","misto_transakce":"KINO AERO","castka_czk":-240.0,"měna":"CZK","kategorie":"Volný čas a zábava","označení operace":"Nákup"},
-    {"datum":"2025-06-10","misto_transakce":"SALON KRASOTY","castka_czk":-320.0,"měna":"CZK","kategorie":"Osobní péče","označení operace":"Nákup"},
-    {"datum":"2025-06-09","misto_transakce":"NÁKUPNÍ CENTRUM PALLADIUM","castka_czk":-2100.0,"měna":"CZK","kategorie":"Nákupy","označení operace":"Nákup"}
+    {"datum":"2025-06-16","misto":"NERUDA PRODUC Prague","castka":-399.0,"měna":"CZK","kategorie":"TV, internet, telefon","typ":"Transakce"},
+    {"datum":"2025-06-15","misto":"ALBERT SUPERMARKET","castka":-1250.50,"měna":"CZK","kategorie":"Potraviny","typ":"Nákup"},
+    {"datum":"2025-06-14","misto":"MOL PETROL STATION","castka":-800.0,"měna":"CZK","kategorie":"Tankování","typ":"Tankování"},
+    {"datum":"2025-06-13","misto":"RESTAURACE U LVA","castka":-450.75,"měna":"CZK","kategorie":"Restaurace","typ":"Nákup"},
+    {"datum":"2025-06-12","misto":"BANKOMAT FIO","castka":-5000.0,"měna":"CZK","kategorie":"Výběr z bankomatu","typ":"Výběr"},
+    {"datum":"2025-06-11","misto":"KINO AERO","castka":-240.0,"měna":"CZK","kategorie":"Volný čas a zábava","typ":"Nákup"},
+    {"datum":"2025-06-10","misto":"SALON KRASOTY","castka":-320.0,"měna":"CZK","kategorie":"Osobní péče","typ":"Nákup"},
+    {"datum":"2025-06-09","misto":"NÁKUPNÍ CENTRUM PALLADIUM","castka":-2100.0,"měna":"CZK","kategorie":"Nákupy","typ":"Nákup"}
   ],
-  STORAGE_KEY: 'dashboard_state',
-  FILTER_DEBOUNCE_MS: 300
+  STORAGE_KEY: 'dashboard_v1',
+  DEBOUNCE_MS: 250
 };
 
+const state = {q: '', from: '', to: '', cat: '', sort: 'date_desc', tabSearch: '', activeTab: 'Vše'};
 let DATA = CONFIG.SAMPLE_DATA.slice();
-let debounceTimer = null;
+let renderTimer = null;
+const cache = {categories: null, places: null};
 
+// ============ UTILS ============
 const el = id => document.getElementById(id);
 const fmt = n => new Intl.NumberFormat('cs-CZ', {maximumFractionDigits: 2}).format(n) + ' Kč';
-const state = {q: '', from: '', to: '', cat: '', sort: 'date_asc', tabSearch: '', activeTab: 'Vše'};
+const sanitize = str => {const d = document.createElement('div'); d.textContent = str; return d.innerHTML;};
 
-// Utilities
-function sanitizeHTML(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+function debounce(fn, delay) {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(fn, delay);
 }
 
 function saveState() {
-  try {
-    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {
-    console.warn('Could not save state:', e);
-  }
+  try {localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state));} catch (e) {}
 }
 
-function loadStateFromStorage() {
+function loadState() {
   try {
     const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
-    if (stored) {
-      Object.assign(state, JSON.parse(stored));
-    }
-  } catch (e) {
-    console.warn('Could not load state:', e);
-  }
+    if (stored) Object.assign(state, JSON.parse(stored));
+  } catch (e) {}
 }
 
-// Core functions
-function categories() {
-  return [...new Set(DATA.map(x => x.kategorie).filter(Boolean))].sort();
+function getCategories() {
+  if (cache.categories) return cache.categories;
+  cache.categories = [...new Set(DATA.map(x => x.kategorie).filter(Boolean))].sort();
+  return cache.categories;
 }
 
+// ============ URL & STATE ============
 function readURL() {
   const p = new URLSearchParams(location.search);
   ['q', 'from', 'to', 'cat', 'sort', 'tabSearch', 'activeTab'].forEach(k => {
@@ -252,9 +249,7 @@ function readURL() {
 
 function writeURL() {
   const p = new URLSearchParams();
-  Object.entries(state).forEach(([k, v]) => {
-    if (v) p.set(k, v);
-  });
+  Object.entries(state).forEach(([k, v]) => {if (v) p.set(k, v);});
   history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p.toString() : ''));
   saveState();
 }
@@ -268,8 +263,36 @@ function applyState() {
   el('tabSearch').value = state.tabSearch;
 }
 
-function setQuickPills() {
-  const quickFilters = [
+// ============ FILTER & SORT ============
+function filtered() {
+  let rows = DATA.slice();
+  
+  if (state.q) {
+    const q = state.q.toLowerCase();
+    rows = rows.filter(x => x.misto.toLowerCase().includes(q));
+  }
+  
+  if (state.from) rows = rows.filter(x => x.datum >= state.from);
+  if (state.to) rows = rows.filter(x => x.datum <= state.to);
+  if (state.cat) rows = rows.filter(x => x.kategorie === state.cat);
+  
+  rows.sort((a, b) => {
+    switch (state.sort) {
+      case 'date_asc': return new Date(a.datum) - new Date(b.datum);
+      case 'date_desc': return new Date(b.datum) - new Date(a.datum);
+      case 'amount_desc': return Math.abs(b.castka || 0) - Math.abs(a.castka || 0);
+      case 'amount_asc': return Math.abs(a.castka || 0) - Math.abs(b.castka || 0);
+      case 'place_asc': return a.misto.localeCompare(b.misto, 'cs');
+      default: return 0;
+    }
+  });
+  
+  return rows;
+}
+
+// ============ RENDER ============
+function renderQuickPills() {
+  const filters = [
     ['Potraviny', 'Potraviny'],
     ['Tankování', 'Tankování'],
     ['Restaurace', 'Restaurace'],
@@ -279,138 +302,91 @@ function setQuickPills() {
   const container = el('quickPills');
   container.innerHTML = '';
   
-  quickFilters.forEach(([label, catValue]) => {
-    const pill = document.createElement('button');
-    pill.className = 'pill' + (state.cat === catValue ? ' active' : '');
-    pill.textContent = label;
-    pill.setAttribute('aria-pressed', state.cat === catValue);
-    pill.onclick = () => {
+  filters.forEach(([label, catValue]) => {
+    const btn = document.createElement('button');
+    btn.className = 'pill' + (state.cat === catValue ? ' active' : '');
+    btn.textContent = label;
+    btn.setAttribute('aria-pressed', state.cat === catValue);
+    btn.onclick = () => {
       state.cat = state.cat === catValue ? '' : catValue;
       state.q = '';
       render();
     };
-    container.appendChild(pill);
+    container.appendChild(btn);
   });
-}
-
-function filtered() {
-  let rows = DATA.slice();
-  
-  if (state.q) {
-    const q = state.q.toLowerCase();
-    rows = rows.filter(x => x.misto_transakce.toLowerCase().includes(q));
-  }
-  if (state.from) {
-    rows = rows.filter(x => x.datum >= state.from);
-  }
-  if (state.to) {
-    rows = rows.filter(x => x.datum <= state.to);
-  }
-  if (state.cat) {
-    rows = rows.filter(x => x.kategorie === state.cat);
-  }
-  
-  rows.sort((a, b) => {
-    try {
-      switch (state.sort) {
-        case 'date_asc':
-          return new Date(a.datum) - new Date(b.datum);
-        case 'date_desc':
-          return new Date(b.datum) - new Date(a.datum);
-        case 'amount_desc':
-          return Math.abs(b.castka_czk || 0) - Math.abs(a.castka_czk || 0);
-        case 'amount_asc':
-          return Math.abs(a.castka_czk || 0) - Math.abs(b.castka_czk || 0);
-        case 'place_asc':
-          return a.misto_transakce.localeCompare(b.misto_transakce, 'cs');
-        default:
-          return 0;
-      }
-    } catch (e) {
-      console.error('Sort error:', e);
-      return 0;
-    }
-  });
-  
-  return rows;
 }
 
 function renderTabs(rows) {
-  const allPlaces = [...new Set(rows.map(x => x.misto_transakce))].sort((a, b) => a.localeCompare(b, 'cs'));
-  const tabs = ['Vše', ...allPlaces];
-  
-  const filteredTabs = tabs.filter(t => t.toLowerCase().includes(state.tabSearch.toLowerCase()));
+  const places = [...new Set(rows.map(x => x.misto))].sort((a, b) => a.localeCompare(b, 'cs'));
+  const tabs = ['Vše', ...places];
+  const filtered_tabs = tabs.filter(t => t.toLowerCase().includes(state.tabSearch.toLowerCase()));
   
   const container = el('tabs');
   container.innerHTML = '';
   
-  if (filteredTabs.length === 0) {
-    container.innerHTML = '<div class="muted" style="padding:10px">Žádné záložky se shodují</div>';
+  if (filtered_tabs.length === 0) {
+    container.innerHTML = '<div class="muted" style="padding:10px">Žádné záložky</div>';
     return;
   }
   
-  filteredTabs.forEach(tab => {
-    const button = document.createElement('button');
-    button.className = 'tab' + (state.activeTab === tab ? ' active' : '');
-    button.textContent = tab;
-    button.setAttribute('role', 'tab');
-    button.setAttribute('aria-selected', state.activeTab === tab);
-    button.onclick = () => {
+  filtered_tabs.forEach(tab => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (state.activeTab === tab ? ' active' : '');
+    btn.textContent = tab;
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', state.activeTab === tab);
+    btn.onclick = () => {
       state.activeTab = tab;
       state.q = tab === 'Vše' ? '' : tab;
       render();
     };
-    container.appendChild(button);
+    container.appendChild(btn);
   });
 }
 
 function renderTable(rows) {
   const tbody = el('tbody');
   tbody.innerHTML = '';
-  
   const emptyState = el('emptyState');
   
   if (rows.length === 0) {
-    emptyState.style.display = 'block';
+    emptyState.hidden = false;
     el('status').textContent = '';
     return;
   }
   
-  emptyState.style.display = 'none';
+  emptyState.hidden = true;
   
+  const frag = document.createDocumentFragment();
   rows.forEach(r => {
     const tr = document.createElement('tr');
-    const amount = parseFloat(r.castka_czk || 0);
-    const isNegative = amount < 0;
-    
+    const amount = parseFloat(r.castka || 0);
+    const isNeg = amount < 0;
     tr.innerHTML = `
-      <td>${sanitizeHTML(r.datum || '-')}</td>
-      <td>${sanitizeHTML(r.misto_transakce || '-')}</td>
-      <td class="${isNegative ? 'neg' : 'pos'}">${fmt(Math.abs(amount))}</td>
-      <td>${sanitizeHTML(r.měna || '-')}</td>
-      <td>${sanitizeHTML(r.kategorie || '-')}</td>
-      <td>${sanitizeHTML(r['označení operace'] || '-')}</td>
+      <td>${sanitize(r.datum || '-')}</td>
+      <td>${sanitize(r.misto || '-')}</td>
+      <td class="${isNeg ? 'neg' : 'pos'}">${fmt(Math.abs(amount))}</td>
+      <td>${sanitize(r.měna || '-')}</td>
+      <td>${sanitize(r.kategorie || '-')}</td>
+      <td>${sanitize(r.typ || '-')}</td>
     `;
-    tbody.appendChild(tr);
+    frag.appendChild(tr);
   });
+  tbody.appendChild(frag);
 }
 
 function updateKPIs(rows) {
-  const count = rows.length;
-  const sum = rows.reduce((a, b) => a + Math.abs(Number(b.castka_czk || 0)), 0);
-  const avg = count > 0 ? sum / count : 0;
-  const places = [...new Set(rows.map(x => x.misto_transakce).filter(Boolean))].length;
-  
-  el('kpiCount').textContent = count.toLocaleString('cs-CZ');
+  el('kpiCount').textContent = rows.length.toLocaleString('cs-CZ');
+  const sum = rows.reduce((a, b) => a + Math.abs(Number(b.castka || 0)), 0);
   el('kpiSum').textContent = fmt(sum);
-  el('kpiAvg').textContent = fmt(avg);
+  el('kpiAvg').textContent = fmt(rows.length > 0 ? sum / rows.length : 0);
+  
+  const places = [...new Set(rows.map(x => x.misto).filter(Boolean))].length;
   el('kpiPlaces').textContent = places.toLocaleString('cs-CZ');
   
   if (rows.length > 0) {
     const dates = rows.map(r => r.datum).filter(Boolean).sort();
-    const minDate = dates[0];
-    const maxDate = dates[dates.length - 1];
-    el('rangeInfo').textContent = `Rozsah: ${minDate} až ${maxDate}`;
+    el('rangeInfo').textContent = `${dates[0]} až ${dates[dates.length - 1]}`;
   } else {
     el('rangeInfo').textContent = '';
   }
@@ -419,26 +395,22 @@ function updateKPIs(rows) {
 function render() {
   writeURL();
   applyState();
-  setQuickPills();
+  renderQuickPills();
   const rows = filtered();
   renderTabs(rows);
   renderTable(rows);
   updateKPIs(rows);
 }
 
-function debouncedRender() {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => render(), CONFIG.FILTER_DEBOUNCE_MS);
-}
-
-function exportCSV(rows, filename = 'dashboard-export.csv') {
+// ============ EXPORT & ACTIONS ============
+function exportCSV(rows, filename = 'export.csv') {
+  if (rows.length === 0) {
+    showStatus('❌ Není co exportovat');
+    return;
+  }
+  
   try {
-    if (rows.length === 0) {
-      showStatus('❌ Není co exportovat', 3000);
-      return;
-    }
-    
-    const hdr = ['datum', 'misto_transakce', 'castka_czk', 'měna', 'kategorie', 'označení operace'];
+    const hdr = ['datum', 'misto', 'castka', 'měna', 'kategorie', 'typ'];
     const csv = [
       hdr.join(';'),
       ...rows.map(r => hdr.map(k => {
@@ -450,31 +422,84 @@ function exportCSV(rows, filename = 'dashboard-export.csv') {
       }).join(';'))
     ].join('\n');
     
-    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
-    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
     URL.revokeObjectURL(url);
     
-    showStatus(`✓ Exportováno ${rows.length} záznamů`, 3000);
+    showStatus(`✓ Exportováno ${rows.length} záznamů`);
   } catch (err) {
     console.error('Export error:', err);
-    showStatus('❌ Chyba při exportu', 3000);
+    showStatus('❌ Chyba exportu');
   }
 }
 
-function showStatus(message, duration = 3000) {
-  el('status').textContent = message;
-  if (duration > 0) {
-    setTimeout(() => {el('status').textContent = '';}, duration);
+function showStatus(msg, duration = 3000) {
+  el('status').textContent = msg;
+  if (duration > 0) setTimeout(() => {el('status').textContent = '';}, duration);
+}
+
+// ============ FILE HANDLING ============
+function normalizeData(rows) {
+  return rows.map(r => ({
+    datum: (r.datum || r.date || r['Datum'] || '').toString().slice(0, 10),
+    misto: (r.misto || r.place || r['Místo'] || r.popis || '').toString().trim(),
+    castka: parseFloat(r.castka || r.amount || r['Částka'] || 0) || 0,
+    měna: (r.měna || r.currency || r['Měna'] || 'CZK').toString(),
+    kategorie: (r.kategorie || r.category || r['Kategorie'] || '').toString().trim(),
+    typ: (r.typ || r.type || 'Transakce').toString().trim()
+  }));
+}
+
+async function handleFile(file) {
+  try {
+    el('fileError').hidden = true;
+    showStatus('📥 Načítám...', 0);
+    
+    const text = await file.text();
+    let rows = [];
+    
+    if (file.name.toLowerCase().endsWith('.json')) {
+      const parsed = JSON.parse(text);
+      rows = normalizeData(Array.isArray(parsed) ? parsed : parsed.data || []);
+    } else {
+      const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+      if (lines.length < 2) throw new Error('Min. 2 řádky (hlavička + data)');
+      
+      const sep = lines[0].includes(';') ? ';' : ',';
+      const headers = lines[0].split(sep).map(s => s.replace(/^\uFEFF/, '').trim());
+      
+      rows = lines.slice(1).map(line => {
+        const obj = {};
+        line.split(sep).forEach((v, i) => {obj[headers[i]] = v.trim();});
+        return obj;
+      });
+      
+      rows = normalizeData(rows);
+    }
+    
+    if (rows.length === 0) throw new Error('Žádné záznamy');
+    
+    DATA = rows;
+    cache.categories = null;
+    state.activeTab = 'Vše';
+    el('fileName').textContent = `✓ ${file.name} (${DATA.length} záznamů)`;
+    showStatus(`✓ Načteno ${rows.length} záznamů`);
+    render();
+  } catch (err) {
+    console.error('File error:', err);
+    const errorDiv = el('fileError');
+    errorDiv.className = 'error';
+    errorDiv.innerHTML = `<strong>❌ Chyba:</strong> ${sanitize(err.message)}`;
+    errorDiv.hidden = false;
+    showStatus('Chyba při načítání');
   }
 }
 
-// Event listeners
+// ============ EVENTS ============
 ['placeSearch', 'dateFrom', 'dateTo', 'categoryFilter', 'sortBy', 'tabSearch'].forEach(id => {
   el(id).addEventListener('input', () => {
     state.q = el('placeSearch').value.trim();
@@ -483,161 +508,61 @@ function showStatus(message, duration = 3000) {
     state.cat = el('categoryFilter').value;
     state.sort = el('sortBy').value;
     state.tabSearch = el('tabSearch').value.trim();
-    debouncedRender();
+    debounce(() => render(), CONFIG.DEBOUNCE_MS);
   });
 });
 
 // Populate categories
 el('categoryFilter').innerHTML = '<option value="">Všechny</option>' + 
-  categories().map(c => `<option value="${c}">${sanitizeHTML(c)}</option>`).join('');
+  getCategories().map(c => `<option value="${c}">${sanitize(c)}</option>`).join('');
 
 // Button handlers
-el('exportCurrent').onclick = () => exportCSV(filtered(), 'filtrovany-export.csv');
-el('exportAll').onclick = () => exportCSV(DATA.slice(), 'vse-data-export.csv');
-el('copyView').onclick = () => exportCSV(filtered(), 'vyber.csv');
-
+el('exportCurrent').onclick = () => exportCSV(filtered(), 'filtrovany.csv');
 el('copyLink').onclick = async () => {
   try {
     await navigator.clipboard.writeText(location.href);
-    showStatus('✓ URL zkopírována do schránky', 3000);
-  } catch (err) {
-    const url = prompt('Zkopíruj URL:', location.href);
+    showStatus('✓ URL zkopírována');
+  } catch {
+    prompt('Zkopíruj URL:', location.href);
   }
 };
-
 el('resetAll').onclick = () => {
-  state.q = '';
-  state.from = '';
-  state.to = '';
-  state.cat = '';
-  state.sort = 'date_asc';
-  state.tabSearch = '';
+  state.q = state.from = state.to = state.cat = state.tabSearch = '';
+  state.sort = 'date_desc';
   state.activeTab = 'Vše';
   render();
 };
-
 el('clearFilters').onclick = el('resetAll').onclick;
-
-// File handling
-function pick(v) {
-  return (v ?? '').toString().trim();
-}
-
-function normalizeLoaded(rows) {
-  return rows.map(r => ({
-    datum: pick(r.datum || r.date || r['datum zaúčtování'] || r['Datum'] || r['Datum provedení'] || r['Datum transakce'] || '').slice(0, 10),
-    misto_transakce: pick(r.misto_transakce || r['Místo transakce'] || r.popis || r.poznámka || ''),
-    castka_czk: parseFloat(r.castka_czk || r.amount || r['Částka'] || r.castka || 0) || 0,
-    měna: pick(r.měna || r.currency || r['Měna'] || 'CZK'),
-    kategorie: pick(r.kategorie || r.category || r['Kategorie'] || ''),
-    'označení operace': pick(r['označení operace'] || r.typ || r.type || 'Transakce')
-  }));
-}
-
-async function handleFile(file) {
-  try {
-    el('fileError').style.display = 'none';
-    el('fileError').innerHTML = '';
-    showStatus('📥 Načítám soubor…', 0);
-    
-    const text = await file.text();
-    let rows = [];
-    
-    if (file.name.toLowerCase().endsWith('.json')) {
-      try {
-        const parsed = JSON.parse(text);
-        rows = normalizeLoaded(Array.isArray(parsed) ? parsed : parsed.data || []);
-      } catch (e) {
-        throw new Error('Nevalidní JSON formát: ' + e.message);
-      }
-    } else {
-      const lines = text.trim().split(/\r?\n/);
-      if (lines.length < 2) {
-        throw new Error('CSV soubor musí mít alespoň 2 řádky (hlavička + data)');
-      }
-      
-      const firstLine = lines[0];
-      const sep = firstLine.includes(';') ? ';' : ',';
-      
-      const headers = firstLine
-        .split(sep)
-        .map(s => s.replace(/^[\uFEFF\xEF\xBB\xBF]/, '').trim());
-      
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        
-        const cols = line.split(sep);
-        const obj = {};
-        headers.forEach((h, idx) => {
-          obj[h] = cols[idx] ? cols[idx].trim() : '';
-        });
-        rows.push(obj);
-      }
-      
-      rows = normalizeLoaded(rows);
-    }
-    
-    if (rows.length === 0) {
-      throw new Error('Soubor neobsahuje žádné záznamy');
-    }
-    
-    DATA = rows;
-    state.activeTab = 'Vše';
-    el('fileName').textContent = `✓ Nahráno: ${file.name} (${DATA.length.toLocaleString('cs-CZ')} záznamů)`;
-    showStatus(`✓ Data úspěšně načtena (${rows.length} záznamů)`, 3000);
-    render();
-  } catch (err) {
-    console.error('File handling error:', err);
-    const errorDiv = el('fileError');
-    errorDiv.className = 'error';
-    errorDiv.innerHTML = `<strong>❌ Chyba:</strong> ${sanitizeHTML(err.message)}`;
-    errorDiv.style.display = 'block';
-    showStatus('Chyba při načítání souboru', 3000);
-  }
-}
 
 el('pickFile').onclick = () => el('fileInput').click();
 el('fileInput').onchange = e => {
-  const f = e.target.files && e.target.files[0];
+  const f = e.target.files?.[0];
   if (f) handleFile(f);
   e.target.value = '';
 };
 
 el('loadSample').onclick = () => {
   DATA = CONFIG.SAMPLE_DATA.slice();
+  cache.categories = null;
   state.activeTab = 'Vše';
-  el('fileName').textContent = 'Používají se ukázková data.';
-  el('fileError').style.display = 'none';
-  showStatus('✓ Vrácena ukázková data', 3000);
+  el('fileName').textContent = 'Ukázková data';
+  el('fileError').hidden = true;
+  showStatus('✓ Ukázková data');
   render();
 };
 
-// Initialize
+// ============ INIT ============
 readURL();
-loadStateFromStorage();
+loadState();
 render();
 
 // Tests
 window.tests = {
-  testCategories: () => categories().length > 0 ? '✓' : '✗',
-  testFiltering: () => filtered().length > 0 ? '✓' : '✗',
-  testExport: () => {
-    try {
-      exportCSV(DATA.slice(), 'test.csv');
-      return '✓';
-    } catch (e) {
-      return '✗: ' + e.message;
-    }
-  },
-  testNormalize: () => {
-    const result = normalizeLoaded([{datum: '2025-01-01', castka_czk: 100}]);
-    return result[0].datum === '2025-01-01' ? '✓' : '✗';
-  },
-  testState: () => state.q !== undefined ? '✓' : '✗'
+  testData: () => DATA.length > 0 ? '✓' : '✗',
+  testFilter: () => filtered().length > 0 ? '✓' : '✗',
+  testExport: () => {try {exportCSV(DATA.slice(), 't.csv'); return '✓';} catch {return '✗';}},
 };
-
-console.log('Dashboard initialized. Tests:', window.tests);
+console.log('Dashboard ready', window.tests);
 </script>
 </body>
 </html>
